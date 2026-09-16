@@ -396,12 +396,67 @@ When creating a complete specification, follow the reference order above.
 
 - Follow the language requested by the user.
 - Use Markdown unless another format is explicitly requested.
-- Use concise, implementation-oriented language.
+- Use concise, implementation-oriented language while retaining enough detail for another analyst to execute the specification without guessing core business logic.
 - Preserve required semantic content of the relevant reference template; exact headings need not match unless strict conformance is requested.
 - Avoid vague qualifiers such as `high`, `low`, `good`, `bad`, `significant`, `fast`, or `large` unless a comparator, definition, or supported threshold exists.
 - Do not invent thresholds merely to eliminate qualitative wording.
 - Respect exact requested item counts.
 - Keep material assumptions, limitations, and feasibility constraints visible.
+
+### Complete Document Structure
+
+When generating a complete standalone document, begin with an **Outline** that lists the major sections that will follow.
+
+The Outline must reflect the actual document structure. Do not include sections that are not present in the final document.
+
+After the Outline, provide the full specification using the mandatory semantic sections defined by the relevant reference file.
+
+When useful for navigation, use numbered Markdown headings consistently throughout the document.
+
+### Summary Requirement
+
+For a complete standalone analytical document, include a concise **Summary** near the end unless:
+
+- the reference already contains an equivalent summary/master section that adequately serves this purpose;
+- the user explicitly asks for no summary; or
+- the requested output is intentionally narrow, such as a single table, patch, critique, or append-only change.
+
+The Summary should synthesize the specification itself, not introduce new findings or recommendations.
+
+Depending on the document type, it may summarize:
+
+- scope and analytical purpose;
+- key IDs and traceability;
+- major assumptions or unresolved TBD items;
+- feasibility or readiness constraints;
+- handoff to the next downstream document.
+
+### Complete vs Staged vs Append Output
+
+- **Complete:** return a self-contained document with Outline, required body sections, and Summary where applicable.
+- **Staged:** return the complete requested stage/document, not fragments of individual template fields unless the user explicitly asks for them.
+- **Append:** return only the changed or newly added content and clearly identify where it belongs in the existing document.
+
+Do not duplicate the same information solely to satisfy Outline or Summary requirements.
+
+### Markdown Quality
+
+- Use headings, tables, bullets, and code formatting only when they improve specification readability.
+- Keep tables compact and implementation-oriented.
+- Do not place long explanatory prose inside table cells when a dedicated section would be clearer.
+- Keep identifiers such as `PROB-01`, `BQ-01`, `AR-01`, `MET-01`, and `DR-01` visually stable and consistent.
+- Do not mix multiple heading conventions within the same standalone document.
+
+### Semantic Template Matching
+
+Reference templates define required **semantic content**, not mandatory word-for-word headings or formatting, unless strict template conformance is explicitly requested.
+
+When producing or reviewing documentation:
+
+- ensure every required semantic element is present;
+- allow equivalent headings when their meaning is unambiguous;
+- distinguish missing required content from optional enhancement;
+- prioritize logical correctness and upstream alignment over cosmetic conformity.
 
 ---
 
@@ -455,7 +510,12 @@ Before returning final documentation verify:
 ### Output Quality
 
 - [ ] Requested scope and item counts are respected.
-- [ ] Required semantic sections are preserved.
+- [ ] Complete standalone documents begin with an Outline that matches the actual document structure.
+- [ ] Required semantic sections are preserved even when headings differ from the reference wording.
+- [ ] Complete standalone documents include a Summary when applicable and do not introduce new analytical findings in that Summary.
+- [ ] Staged outputs deliver a complete requested stage rather than accidental fragments.
+- [ ] Append outputs clearly identify the insertion/update location.
+- [ ] Markdown heading style and identifiers remain consistent within the document.
 - [ ] No unnecessary implementation details were introduced.
-- [ ] Material assumptions and limitations remain visible.
+- [ ] Material assumptions, limitations, and unresolved `TBD` items remain visible.
 - [ ] The resulting documentation is directly usable by a Data Analyst or Analytics Engineer.
