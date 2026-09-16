@@ -1,7 +1,7 @@
 ---
 name: data-analyst-documentation-skill
 description: >-
-  Use this skill when the user wants to transform a business problem, stakeholder request, dataset schema, or existing analytics documentation into structured Data Analyst documentation, including business context, analytical questions, analytical requirements, metric definitions, data requirements, and data-quality specifications. Do not use this skill for direct data analysis, KPI calculation, SQL execution, dashboard building, backend/API specifications, or software-development requirements.
+  Use this skill when the user wants to transform a business problem, stakeholder request, dataset schema, or existing analytics documentation into structured Data Analyst documentation, including business context, business problems, business questions, analytical requirements, metric definitions, data requirements, and data-quality specifications. Do not use this skill for direct data analysis, KPI calculation, SQL execution, dashboard building, backend/API specifications, or software-development requirements.
 ---
 
 # Data Analyst Documentation Skill
@@ -10,779 +10,402 @@ description: >-
 
 This skill creates structured, implementation-ready analytical documentation for Data Analysts and Analytics Engineers.
 
-Its primary responsibility is to translate an ambiguous business request into the following traceable specification chain:
+Canonical traceability:
 
-`Business Problem -> Decision -> Analysis Objective -> Business Question -> Analytical Requirement -> Metric -> Data Requirement`
+`Business Context -> PROB -> DEC -> OBJ -> BQ -> AR -> MET -> DR`
 
-This skill is a **documentation and specification workflow**, not a data-analysis workflow.
+Where:
+
+- `PROB` — Business Problem
+- `DEC` — Business Decision
+- `OBJ` — Analysis Objective
+- `BQ` — Business Question
+- `AR` — Analytical Requirement
+- `MET` — Metric
+- `DR` — Data Requirement
+
+This is a documentation and specification workflow, not a data-analysis workflow.
 
 ### In Scope
 
 Use this skill to:
 
-* Frame and refine business problems for analytical work.
-* Identify the business decision that the analysis should support.
-* Define analysis objectives.
-* Define measurable Business Questions.
-* Specify analytical requirements, including population, baseline, dimensions, filters, exclusions, analytical approach, and expected outputs.
-* Define metrics and their business logic.
-* Define required data entities, fields, grain, relationships, time semantics, and data-quality expectations.
-* Assess whether available data can support an Analytical Requirement.
-* Review, refine, or extend existing Data Analyst documentation.
-* Identify ambiguity, unsupported assumptions, logical flaws, data gaps, and feasibility risks.
-* Maintain traceability across analytical documents.
+- Establish business/domain context for analytical work.
+- Frame and refine Business Problems.
+- Identify the business decision the analysis should support.
+- Define Analysis Objectives and Business Questions.
+- Define Analytical Requirements: population, period, baseline, dimensions, filters, exclusions, analytical approach, and expected output.
+- Define metrics and business logic.
+- Define required entities, fields, grain, relationships, time semantics, and data-quality expectations.
+- Assess analytical feasibility and data readiness.
+- Review, refine, extend, or practice analytical documentation.
+- Maintain cross-document traceability.
 
 ### Out of Scope
 
 Do not:
 
-* Query or execute against datasets.
-* Calculate actual KPI or metric values.
-* Perform EDA or statistical analysis.
-* Perform root-cause analysis.
-* Produce analytical findings as if analysis had already been executed.
-* Generate evidence-backed recommendations without analytical results.
-* Build Power BI dashboards or other visualization artifacts.
-* Design backend APIs.
-* Write BRD/FRD for software systems.
-* Create use cases, BPMN flows, or backend architecture specifications.
-* Invent business facts, dataset fields, business rules, thresholds, data types, or SLA values that are not supported by provided information.
+- Execute queries or analytical code.
+- Calculate actual KPI values.
+- Perform EDA, statistical analysis, or root-cause analysis.
+- Present findings or recommendations as if analysis has already been executed.
+- Build dashboards.
+- Design backend APIs or BRD/FRD software requirements.
+- Invent unsupported facts, fields, keys, relationships, data types, business rules, thresholds, SLA values, causal relationships, or proxies.
 
 ---
 
 ## 2. Input Handling
 
-Before generating documentation, determine what information is available.
-
 ### Minimum Input
 
 At least one of the following must be available:
 
-* A business problem or stakeholder request.
-* Existing analytical documentation that the user wants to review or extend.
+- A business problem or stakeholder request.
+- A dataset/schema/source from which an analytical context can be established.
+- Existing analytical documentation to review or extend.
 
 ### Recommended Supporting Inputs
 
 When available, use:
 
-* Stakeholder or business context.
-* Business decision that the analysis should support.
-* Dataset schema or data dictionary.
-* Available tables, entities, fields, and relationships.
-* Existing Business Questions.
-* Existing Analytical Requirements.
-* Existing metrics or KPIs.
-* Analysis period or reporting window.
-* Business rules, exclusions, targets, or comparison baselines.
+- Business/domain context.
+- Stakeholder and decision context.
+- Dataset page, schema, data dictionary, repository documentation, or uploaded structured data.
+- Existing Business Questions, Analytical Requirements, metrics, or data requirements.
+- Analysis period, business rules, exclusions, targets, and baselines.
 
 ### Missing Information
 
 Classify missing information as:
 
-* **Blocking:** Missing information would make the specification logically invalid or materially misleading.
-* **Non-blocking:** Documentation can continue if the missing information is explicitly marked.
+- **Blocking** — proceeding would make the specification logically invalid or materially misleading.
+- **Non-blocking** — proceed while explicitly marking the missing item.
 
-For blocking information, ask only the minimum clarification required to continue.
-
-For non-blocking information, continue and use one of:
-
-* `TBD`
-* `Unknown`
-* `Assumption`
-
-Do not stop the workflow merely because every field is not known.
+For non-blocking gaps use `TBD`, `Unknown`, or `Assumption`. Ask only the minimum clarification required for blocking gaps.
 
 ---
 
 ## 3. Evidence & Assumption Policy
 
-Maintain a strict distinction between evidence, stakeholder claims, assumptions, and hypotheses.
+Keep evidence, claims, assumptions, and hypotheses distinct.
 
-Use the following statuses when relevant:
+Use statuses when relevant:
 
-| Status             | Meaning                                                              |
-| ------------------ | -------------------------------------------------------------------- |
-| **Confirmed**      | Explicitly validated by an authoritative source provided in the task |
-| **User-provided**  | Stated by the user or stakeholder but not independently validated    |
-| **Schema-derived** | Directly supported by the supplied dataset schema                    |
-| **Hypothesis**     | Proposition that the future analysis should test                     |
-| **Assumption**     | Temporary working condition required to proceed                      |
-| **TBD**            | Required information has not yet been defined                        |
-| **Unknown**        | Information is unavailable and cannot safely be inferred             |
+| Status | Meaning |
+|---|---|
+| Confirmed | Explicitly validated by an authoritative source |
+| User-provided | Stated by the user/stakeholder but not independently validated |
+| Schema-derived | Directly supported by supplied schema/metadata |
+| Source-provided | Directly stated by the supplied source |
+| Context-derived | Reasonably synthesized from supported context |
+| Hypothesis | Proposition for future analysis to test |
+| Assumption | Temporary working condition |
+| TBD | Required information not yet defined |
+| Unknown | Information unavailable and unsafe to infer |
 
-### Never Invent
+Never fabricate business performance, percentages, financial impact, fields, keys, relationships, data types, targets, thresholds, SLA values, business rules, causal claims, or proxies.
 
-Never fabricate or silently infer:
+Association is not causation. Prefer wording such as `is associated with`, `coincides with`, `the stakeholder suspects`, or `hypothesis to be tested` unless causal evidence or an appropriate causal design is available.
 
-* Business performance values.
-* Percentages or data-quality rates.
-* Financial impacts.
-* Dataset tables or fields.
-* Primary or foreign keys.
-* Relationships between entities.
-* Data types not provided by the schema.
-* Metric targets.
-* Threshold values.
-* SLA values.
-* Business rules.
-* Causal relationships.
-* Proxy fields.
-
-If required information is unsupported, mark it as `TBD`, `Unknown`, or `Assumption`.
-
-### Causality
-
-Do not convert correlation, co-movement, temporal association, or stakeholder suspicion into causality.
-
-Prefer wording such as:
-
-* `is associated with`
-* `coincides with`
-* `the stakeholder suspects`
-* `hypothesis to be tested`
-
-unless causal evidence or an appropriate causal analytical design is explicitly available.
-
-### Solution Bias
-
-Do not select a business solution before analytical evidence exists.
-
-Specify:
-
-`Decision to be supported`
-
-rather than:
-
-`Action that must be taken`
-
-The analysis may evaluate decision options, but the documentation must not predetermine the conclusion.
+Do not predetermine a business solution. Define the **decision to be supported**, not the action that must be taken.
 
 ---
 
 ## 4. Operating Modes
 
-Select the mode based on the user's request.
-
 ### Mode A — Scaffold
 
-Use when creating analytical documentation from a new business problem.
-
-Create the requested documents according to the workflow defined in Section 5.
+Create requested analytical documentation from a new problem, source, dataset, or schema using the workflow in Section 5.
 
 ### Mode B — Review / Refine
 
-Use when analytical documentation already exists.
-
-Review for:
-
-* Logical inconsistencies.
-* Unsupported claims.
-* Missing decision context.
-* Ambiguous Business Questions.
-* Missing or weak Analytical Requirements.
-* Missing baselines.
-* Incorrect metric logic.
-* Missing data requirements.
-* Data-feasibility issues.
-* Broken traceability.
-
-Preserve correct existing content.
-
-Do not rewrite sections that do not materially need correction.
+Review existing analytical documentation for logical inconsistencies, unsupported claims, upstream misalignment, weak questions or requirements, metric defects, data gaps, feasibility risks, and broken traceability. Preserve correct content and avoid unnecessary rewrites.
 
 ### Mode C — Extend
 
-Use when the user wants to add Business Questions, Analytical Requirements, metrics, requirements, or other documentation.
-
-When extending:
-
-* Preserve existing identifiers.
-* Preserve established naming conventions.
-* Add only the requested scope.
-* Maintain traceability with existing documents.
-
-### Delivery Mode
-
-Follow the user's requested delivery style.
-
-Available modes:
-
-* **Complete:** Return all requested documentation together when practical.
-* **Staged:** Produce one document at a time when explicitly requested or when the full output would be impractical.
-* **Append:** Return only newly added or changed content.
-
-Do not force one-file-per-turn when the user requests a complete deliverable.
+Add only requested scope while preserving existing IDs, naming conventions, and traceability.
 
 ### Mode D — Practice / Review
 
-Use when the user submits their own analytical documentation for evaluation.
-
-The goal is to assess the user's reasoning and document quality before suggesting improvements.
-
-Review in this order:
+When the user submits their own document:
 
 1. Identify the document type.
-2. Identify its upstream document.
-3. Detect the user's actual core content even when headings differ from the reference template.
-4. Compare the core content with the semantic requirements of the corresponding reference.
-5. Validate alignment with the upstream document.
+2. Identify its direct upstream artifact.
+3. Detect the actual semantic content even when headings differ.
+4. Compare it with the corresponding reference requirements.
+5. Validate upstream alignment.
 6. Identify logical, analytical, or scope issues.
-7. Separate findings into:
-   - Correct
-   - Needs revision
-   - Missing required content
-   - Optional enhancement
-8. Suggest additional sections only after core correctness has been evaluated.
-9. Do not rewrite the document unless the user explicitly requests rewriting.
+7. Classify findings as `Correct`, `Needs revision`, `Missing required content`, or `Optional enhancement`.
+8. Suggest optional additions only after core correctness is assessed.
+9. Do not rewrite unless explicitly requested.
+
+### Delivery Mode
+
+- **Complete** — return the complete requested document set when practical.
+- **Staged** — one document/stage at a time when requested or necessary.
+- **Append** — return only added/changed content.
+
+Do not force one-file-per-turn when the user requests a complete deliverable.
 
 ---
 
 ## 5. Execution Workflow
 
-Follow the steps below in sequence.
+Follow these steps in sequence.
 
 ### Step 1 — Parse the Request
 
-Identify:
+Identify the requested deliverable, business/analytical request, stakeholder, constraints, available sources/schema, existing documentation, and exact requested item counts.
 
-* Business problem or analytical request.
-* Stakeholder or intended decision-maker.
-* Requested deliverable.
-* Explicit constraints.
-* Available data/schema context.
-* Existing documentation.
-* Requested number of items, if specified.
-
-If the user requests exactly `N` Business Questions, Analytical Requirements, metrics, or other items, produce exactly `N`.
+If the user requests exactly `N` items, produce exactly `N`.
 
 ---
 
-### Step 2 — Separate Facts, Claims, and Unknowns
+### Step 2 — Resolve Business Context
 
-Before framing the problem, distinguish:
+Business Context is the upstream foundation for Business Problem framing. It describes the business/domain environment; it is not itself a Business Problem, Business Question, Analytical Requirement, Metric, Data Requirement, finding, or recommendation.
 
-* Confirmed information.
-* Stakeholder/user claims.
-* Schema-derived facts.
-* Hypotheses.
-* Assumptions.
-* Unknown information.
-* TBD requirements.
+First inspect the available source material and choose one context mode.
 
-Do not silently promote a stakeholder claim or assumption into a confirmed fact.
+#### Mode 1 — Source-Grounded Context
 
----
+Use when supplied sources provide enough business/domain context.
 
-### Step 3 — Define the Business Problem
+Possible sources include:
 
-Describe:
+- Official dataset or company documentation.
+- Dataset metadata or schema.
+- Repository documentation.
+- User-provided files or stakeholder context.
+- Authoritative source material supplied in the task.
 
-* Observed or claimed current condition.
-* Business concern.
-* Known or suspected business impact.
-* Relevant business scope.
-* Boundaries.
-* Assumptions.
-* Constraints.
+Rules:
 
-Do not state unsupported causal relationships.
+- Preserve the source's meaning.
+- Distinguish source statements from schema-derived observations.
+- Do not add unsupported internal business conditions.
+- Raw structured data may be inspected for file/sheet/table names, columns, types, entities, and metadata, but do not perform value-level analysis unless explicitly requested outside this skill.
 
----
+#### Mode 2 — Constructed Analytical Context
 
-### Step 4 — Define the Decision Context
+Use when the available source is analytically useful but does not provide enough real business context for downstream documentation.
 
-Determine what business decision the analysis is intended to support.
+Construct a plausible analytical context using only:
 
-Where information is available, identify:
+`Dataset Evidence + Domain Context + Relevant Current Business Need`
 
-* Decision ID.
-* Decision owner.
-* Decision to support.
-* Decision deadline or relevant timing.
-* Potential decision options.
+Process:
 
-Decision options must not be presented as predetermined recommendations.
+1. Identify the domain represented by the source.
+2. Identify supported business entities and processes.
+3. Gather relevant external/domain context when external research is appropriate and permitted.
+4. Check that the external context is compatible with the dataset scope.
+5. Construct a realistic analytical context without claiming it is the actual internal context of a real company.
+6. Label constructed elements clearly as `Context-derived`, `Assumption`, or equivalent.
 
-If the decision is not yet known and this does not block the remaining specification, mark it `TBD`.
+Do not invent claims such as revenue decline, churn increase, margin compression, return-rate deterioration, operational failures, or strategic priorities unless supported by a source.
 
----
+If external research is unavailable, proceed with dataset/domain evidence only and explicitly state the limitation.
 
-### Step 5 — Define Analysis Objectives
+Expected Business Context sections when producing a full context document:
 
-Each Analysis Objective must describe what the analysis needs to:
-
-* Measure.
-* Quantify.
-* Compare.
-* Segment.
-* Diagnose.
-* Validate.
-
-Every Analysis Objective must support at least one business decision.
-
-Avoid generic objectives such as:
-
-* `Understand business performance`
-* `Analyze the data`
-* `Find useful insights`
+1. Project Metadata
+2. Business / Domain Overview
+3. Operating Context
+4. Key Stakeholders
+5. Key Business Entities
+6. Current Business & Data Context
+7. Analytical Relevance
+8. Known Context Limitations
+9. Source & Evidence Summary
 
 ---
 
-### Step 6 — Define Business Questions
+### Step 3 — Separate Facts, Claims, and Unknowns
 
-Each Business Question must be:
+Classify material information as Confirmed, User-provided, Schema-derived, Source-provided, Context-derived, Hypothesis, Assumption, TBD, or Unknown.
 
-* Decision-relevant.
-* Measurable.
-* Analytically answerable.
-* Traceable to an Analysis Objective.
-* Compatible with the available or required data.
-
-Where applicable, define:
-
-* Business Question ID.
-* Related Business Problem ID.
-* Analysis Objective ID.
-* Decision ID.
-* Business Question.
-* Purpose.
-* Priority.
-
-Business Questions define **what the business needs the analysis to answer** and **why that answer matters**.
-
-Do not place implementation details in the Business Question specification. The following belong to Analytical Requirements instead:
-
-* Unit of analysis.
-* Eligible population.
-* Analysis period.
-* Baseline or comparator.
-* Required metrics.
-* Dimensions.
-* Filters and exclusions.
-* Analytical method.
-* Hypotheses and alternative explanations.
-* Expected analytical output.
-* Feasibility.
-
-Avoid Business Questions that merely restate a metric, describe a technical method, or predetermine the result.
+Do not silently promote claims or assumptions into facts.
 
 ---
 
-### Step 7 — Define Analytical Requirements
+### Step 4 — Define the Business Problem
 
-Translate each Business Question into one or more implementation-oriented Analytical Requirements.
+Start from Business Context, not from dataset columns.
 
-Use stable identifiers:
+A Business Problem should describe an observed/claimed condition, unresolved analytical uncertainty, and relevant business consequence without asserting unsupported root cause.
 
-`AR-01`, `AR-02`, ...
+Use stable IDs such as `PROB-01`.
 
-Each Analytical Requirement must trace to a valid Business Question and define how the analysis should be structured without performing the analysis itself.
-
-Where applicable, define:
-
-* Analytical Requirement ID.
-* Related Business Question ID.
-* Analytical objective.
-* Unit of analysis.
-* Eligible population.
-* Analysis period.
-* Baseline or comparator.
-* Required metrics.
-* Dimensions.
-* Inclusion rules.
-* Exclusion rules.
-* Analytical approach.
-* Hypothesis and alternative explanation when relevant.
-* Expected analytical output.
-* Feasibility.
-* Assumptions and limitations.
-
-### Comparative Requirements
-
-Analytical Requirements involving comparison must define an explicit comparator or baseline.
-
-Examples:
-
-* Previous period.
-* Same period last year.
-* Business target.
-* Historical baseline.
-* Another segment or category.
-* Reference/control group.
-
-If the comparator is required but not known, mark it `TBD` rather than inventing one.
-
-### Analytical Hypotheses
-
-A hypothesis is not a fact.
-
-When a hypothesis is useful, distinguish:
-
-* Primary hypothesis.
-* Alternative explanation.
-* Evidence that would weaken or contradict the hypothesis.
-
-Do not design the Analytical Requirement solely to confirm an existing belief.
+Supporting data/platform issues may use `DP-xx` only when explicitly supported. They are secondary analytical-readiness issues, not the primary traceability chain.
 
 ---
 
-### Step 8 — Define Metrics
+### Step 5 — Define Decision Context
 
-Every metric must have a stable identifier when part of a multi-document specification.
-
-Where applicable, define:
-
-* Metric ID.
-* Related Analytical Requirement ID.
-* Metric name.
-* Business definition.
-* Metric role.
-* Metric domain.
-* Metric type.
-* Mathematical logic.
-* Eligible population.
-* Inclusion rules.
-* Exclusion rules.
-* Null handling.
-* Zero-denominator behavior.
-* Unit of analysis.
-* Source grain.
-* Reporting grain.
-* Time semantics.
-* Supported dimensions.
-* Implementation reference.
-
-### Metric Types
-
-Do not assume every metric follows a numerator/denominator formula.
-
-Possible metric types include:
-
-* Count.
-* Distinct Count.
-* Sum.
-* Ratio.
-* Rate.
-* Average.
-* Median.
-* Percentile.
-* Index.
-* Snapshot.
-* Derived metric.
-
-The mathematical formulation must match the metric type.
-
-### Percentage Convention
-
-Unless the user or target system explicitly requires another convention, represent ratio/rate values internally on a `0–1` scale.
-
-Example:
-
-`0.2537`
-
-represents:
-
-`25.37%`
-
-Treat `%` as display formatting.
-
-Do not combine an internal `×100` transformation with percentage formatting unless explicitly required by the target system.
-
-### Zero Denominator
-
-Do not write ambiguous rules such as:
-
-`return 0 or NULL`
-
-Define one behavior.
-
-Unless business semantics explicitly require another treatment, an undefined ratio caused by a zero eligible denominator should be represented as `NULL` or equivalent blank semantics rather than `0%`.
+Use `DEC-xx`. Identify the decision, owner, timing, options, and required evidence when supported. If the decision need is unknown but non-blocking, use `TBD`; do not invent a decision to complete a template.
 
 ---
 
-### Step 9 — Define Data Requirements
+### Step 6 — Define Analysis Objectives
 
-Map Analytical Requirements and Metrics to the data needed to implement them.
+Use `OBJ-xx`. Objectives should use verbs such as quantify, compare, identify, evaluate, segment, assess, determine, or validate and must support a decision.
 
-Where supported by provided information, specify:
-
-* Data Requirement ID.
-* Related Analytical Requirement ID.
-* Related Metric ID.
-* Entity or source table.
-* Required field.
-* Business meaning.
-* Data type.
-* Source grain.
-* Primary/foreign key where known.
-* Required relationships.
-* Time field.
-* Required data-quality rule.
-* Known limitation.
-
-Never invent fields or relationships that are absent from the supplied schema.
-
-If a field is conceptually required but unavailable, document the requirement and mark availability accordingly.
+Avoid generic goals such as `analyze the data` or `find insights`.
 
 ---
 
-### Step 10 — Assess Data Feasibility
+### Step 7 — Define Business Questions
 
-Classify analytical feasibility as:
+Business Questions define **WHAT** the business needs answered and **WHY** the answer matters.
 
-* **Answerable:** Required data is available and sufficient.
-* **Partially Answerable:** Some parts can be answered, but limitations materially constrain the result.
-* **Blocked:** Required information or data is unavailable.
+Use `BQ-xx`. Each BQ should include, where applicable:
 
-For unavailable fields:
+- Related Problem
+- Business Question
+- Purpose
+- Decision Supported
+- Priority
 
-* Do not automatically create a proxy.
-* A proxy may only be proposed when its business meaning reasonably represents the missing concept.
-* Explicitly document the limitation introduced by the proxy.
-
-If no valid proxy exists, state:
-
-`No valid proxy identified.`
+Do not place Unit of Analysis, Population, Baseline, Metrics, Dimensions, Filters, Methods, Expected Output, or physical fields in the BQ specification; these belong downstream.
 
 ---
 
-### Step 11 — Validate Traceability
+### Step 8 — Define Analytical Requirements
 
-Maintain the following analytical chain where applicable:
+Analytical Requirements define **HOW** the analysis must be structured.
 
-`PROB -> DEC -> OBJ -> BQ -> AR -> MET -> DR`
+Use `AR-xx`. Each AR should trace to a BQ and define where applicable:
 
-Interpretation:
+- Analytical Objective
+- Unit of Analysis
+- Eligible Population
+- Analysis Period
+- Baseline / Comparator
+- Required Metrics
+- Dimensions
+- Inclusion / Exclusion Rules
+- Analytical Approach
+- Hypothesis / Alternative Explanation
+- Expected Analytical Output
+- Feasibility
+- Assumptions & Limitations
 
-* `PROB` — Business Problem
-* `DEC` — Business Decision
-* `OBJ` — Analysis Objective
-* `BQ` — Business Question
-* `AR` — Analytical Requirement
-* `MET` — Metric
-* `DR` — Data Requirement
+Do not perform the analysis itself.
 
-Validation rules:
+---
 
-* Every priority Business Question must support an Analysis Objective.
-* Every Analysis Objective must support a business decision.
-* Every Analytical Requirement must trace to a Business Question.
-* Every primary Metric must support at least one Analytical Requirement.
-* Supporting or guardrail Metrics must have an explicit purpose.
-* Every Data Requirement must support an Analytical Requirement, Metric, or analytical constraint.
+### Step 9 — Define Metrics
 
-Avoid orphan requirements.
+Use `MET-xx`. Each metric must trace to an AR and define business meaning, role, type, mathematical logic, eligible population, grains, time semantics, null/zero-denominator behavior, dimensions, and dependencies as applicable.
 
-### Upstream Alignment Check
+Do not assume all metrics are ratios. Internal ratios/rates should normally use a `0–1` representation with `%` as display formatting.
 
-When reviewing or extending an existing document, validate it against its direct upstream artifact.
+---
 
-Examples:
+### Step 10 — Define Data Requirements
 
-- Business Problem must align with Business Context.
-- Business Question must align with Business Problem, Decision, and Analysis Objective.
-- Analytical Requirement must align with Business Question.
-- Metric must align with Analytical Requirement.
-- Data Requirement must align with Metric or Analytical Requirement.
+Use `DR-xx`. Map ARs and Metrics to required entities, conceptual/physical fields, grain, identifiers, relationships, time fields, data-quality requirements, availability, and limitations.
 
-A document may be structurally complete but still be considered logically incorrect if it does not align with its upstream artifact.
+Do not invent fields, keys, relationships, cardinality, or proxies. If a conceptual requirement is known but physical implementation is not, use `TBD` for the physical field.
+
+---
+
+### Step 11 — Assess Data Feasibility
+
+Use evidence-based readiness statuses such as `Answerable / Partially Answerable / Blocked / TBD` for AR feasibility and `Ready / Partially Ready / Blocked / TBD` for downstream data readiness where appropriate.
+
+Do not automatically create proxies. If no semantically valid proxy exists, state `No valid proxy identified.`
+
+---
+
+### Step 12 — Validate Traceability
+
+Validate:
+
+`Business Context -> PROB -> DEC -> OBJ -> BQ -> AR -> MET -> DR`
+
+Rules:
+
+- Business Problem aligns with Business Context.
+- Business Question aligns with Problem, Decision, and Objective.
+- AR aligns with BQ.
+- Metric aligns with AR.
+- DR aligns with AR and/or Metric.
+- No orphan requirements.
+
+A structurally complete document can still be logically incorrect if it is misaligned with its upstream artifact.
 
 ---
 
 ## 6. Reference Routing
 
-Read only the reference files required for the requested task.
+Read only the reference files needed for the requested task.
 
-### Business Context
+- Business Context: `references/01-business-context.md`
+- Business Problem: `references/02-business-problem.md`
+- Business Question: `references/03-business-question.md`
+- Analytical Requirement: `references/04-analytical-requirement.md`
+- Metric Dictionary: `references/05-metric-dictionary.md`
+- Data Requirements & Quality: `references/06-data-requirements-quality.md`
 
-Use:
-
-`references/01-business-context.md`
-
-For:
-
-* Business/domain context.
-* Operating context.
-* Stakeholders.
-* Key business entities.
-* Analytical relevance.
-* Context limitations and evidence status.
-
----
-
-### Business Problem
-
-Use:
-
-`references/02-business-problem.md`
-
-For:
-
-* Core analytical problems.
-* Decision context.
-* Analysis objectives.
-* Scope and boundaries.
-* Assumptions and constraints.
-* Supporting DWH / ETL / ELT problems when explicitly relevant.
-
----
-
-### Business Questions
-
-Use:
-
-`references/03-business-question.md`
-
-For:
-
-* Business Question derivation.
-* Question purpose.
-* Problem and decision alignment.
-* Business-facing prioritization.
-* Business Question traceability.
-
----
-
-### Analytical Requirements
-
-Use:
-
-`references/04-analytical-requirement.md`
-
-For:
-
-* Unit of analysis.
-* Eligible population.
-* Analysis period.
-* Baseline/comparator.
-* Required metrics.
-* Dimensions.
-* Filters and exclusions.
-* Analytical approach.
-* Expected analytical output.
-* Feasibility and limitations.
-
----
-
-### Metric Dictionary
-
-Use:
-
-`references/05-metric-dictionary.md`
-
-For:
-
-* Metric master index.
-* Business definitions.
-* Metric type and classification.
-* Mathematical formulation.
-* Population and filtering rules.
-* Grain.
-* Time semantics.
-* Null/edge-case handling.
-* Implementation reference logic.
-
----
-
-### Data Requirements & Quality
-
-Use:
-
-`references/06-data-requirements-quality.md`
-
-For:
-
-* Required entities and fields.
-* Source grain.
-* Keys and relationships.
-* Data availability.
-* Data-quality requirements.
-* Known data gaps.
-* Feasibility constraints.
+When creating a complete specification, follow the reference order above.
 
 ---
 
 ## 7. Output Standards
 
-* Follow the language requested by the user.
-* Produce Markdown documentation unless another format is explicitly requested.
-* Use concise, implementation-oriented language.
-* Avoid unnecessary conversational introductions inside formal documentation.
-* Avoid vague terms such as `high`, `low`, `good`, `bad`, `significant`, `fast`, or `large` without a comparator, definition, or threshold.
-* Do not invent thresholds merely to remove qualitative wording.
-* Use `TBD` when an implementation requirement needs a threshold that has not been defined.
-* Preserve mandatory core sections of the relevant reference template.
-
-### Semantic Template Matching
-
-Reference templates define required semantic content, not mandatory word-for-word headings or formatting, unless the user explicitly requests strict template conformance.
-
-When reviewing user-created documentation:
-
-- identify whether the required meaning is present even if headings differ;
-- do not mark content incorrect solely because section names or order differ;
-- distinguish between missing required content and missing optional template sections;
-- evaluate logical alignment before formatting conformity.
-
-* Do not remove or rename core sections unless the user explicitly requests a template redesign.
-* Additional sections may be introduced only when necessary for correctness, traceability, or implementation and when the information cannot logically fit an existing section.
-* Respect exact item counts requested by the user.
-* Explicitly document material assumptions, limitations, and feasibility constraints.
-* Do not hide important analytical limitations outside the formal specification.
+- Follow the language requested by the user.
+- Use Markdown unless another format is explicitly requested.
+- Use concise, implementation-oriented language.
+- Preserve required semantic content of the relevant reference template; exact headings need not match unless strict conformance is requested.
+- Avoid vague qualifiers such as `high`, `low`, `good`, `bad`, `significant`, `fast`, or `large` unless a comparator, definition, or supported threshold exists.
+- Do not invent thresholds merely to eliminate qualitative wording.
+- Respect exact requested item counts.
+- Keep material assumptions, limitations, and feasibility constraints visible.
 
 ---
 
 ## 8. Definition of Done
 
-Before returning any final documentation, verify all applicable checks.
+Before returning final documentation verify:
 
 ### Evidence Quality
 
-* [ ] No unsupported business facts were invented.
-* [ ] Claims and confirmed facts are distinguishable where material.
-* [ ] Hypotheses are not presented as facts.
-* [ ] Assumptions are explicit.
-* [ ] Unknown or undefined values are marked `Unknown` or `TBD`.
-* [ ] No unsupported causal relationships are stated as facts.
-* [ ] No unsupported thresholds, fields, data types, percentages, or business rules were fabricated.
+- [ ] No unsupported business facts, values, thresholds, fields, data types, relationships, rules, causal claims, or proxies were invented.
+- [ ] Facts, claims, assumptions, hypotheses, and unknowns are distinguishable where material.
+- [ ] Constructed Business Context is clearly labeled and not presented as actual internal company context.
 
-### Analytical Correctness
+### Context & Analytical Correctness
 
-* [ ] The Business Problem is specific enough to guide analysis.
-* [ ] The intended business decision is identified or explicitly marked `TBD`.
-* [ ] Analysis Objectives support the business decision.
-* [ ] Every Business Question is measurable and decision-relevant.
-* [ ] Every Analytical Requirement traces to a Business Question and defines the required analytical structure.
-* [ ] Comparative Analytical Requirements define a baseline/comparator or explicitly mark it `TBD`.
-* [ ] Unit of analysis is defined where material.
-* [ ] Eligible population is defined where material.
-* [ ] Metric formulas match their metric types.
-* [ ] Percentage/rate representation is mathematically consistent.
-* [ ] Zero-denominator behavior is unambiguous.
-* [ ] Time semantics are defined for time-dependent metrics.
+- [ ] Business Context is established using the appropriate Source-Grounded or Constructed mode.
+- [ ] Business Problem follows from Business Context rather than being reverse-engineered from columns.
+- [ ] Decision is defined or explicitly `TBD`.
+- [ ] Objectives support the decision.
+- [ ] BQs are business-oriented and decision-relevant.
+- [ ] ARs define analytical structure and trace to BQs.
+- [ ] Metrics trace to ARs and have mathematically coherent definitions.
+- [ ] Required comparisons have a comparator or `TBD`.
+- [ ] Unit of Analysis, Population, time semantics, and edge cases are explicit where material.
 
 ### Data Feasibility
 
-* [ ] Required entities and fields come from supplied evidence or are marked `TBD`.
-* [ ] Source grain and analytical/reporting grain are not silently conflated.
-* [ ] Missing data is explicitly documented.
-* [ ] Semantically invalid proxy fields are not proposed.
-* [ ] Feasibility is classified where data limitations materially affect an Analytical Requirement.
+- [ ] DRs trace to ARs/Metrics or explicit analytical constraints.
+- [ ] Conceptual and physical fields are not conflated.
+- [ ] Source grain and analytical/reporting grain are not silently conflated.
+- [ ] Missing data and analytical impact are visible.
+- [ ] Semantically invalid proxies are not proposed.
 
 ### Traceability
 
-* [ ] Priority Business Questions trace to an Analysis Objective.
-* [ ] Analysis Objectives trace to a business decision.
-* [ ] Analytical Requirements trace to Business Questions.
-* [ ] Primary Metrics trace to Analytical Requirements.
-* [ ] Supporting Metrics have an explicit purpose.
-* [ ] Data Requirements trace to Analytical Requirements, Metrics, or analytical constraints.
-* [ ] Cross-document identifiers remain consistent.
+- [ ] `Business Context -> PROB -> DEC -> OBJ -> BQ -> AR -> MET -> DR` is maintained where applicable.
+- [ ] Cross-document identifiers remain consistent.
+- [ ] No orphan requirements remain.
 
 ### Output Quality
 
-* [ ] Requested item counts are respected.
-* [ ] Required template sections are preserved.
-* [ ] No unnecessary implementation details were introduced.
-* [ ] Material assumptions and limitations remain visible.
-* [ ] The resulting documentation is directly usable by a Data Analyst or Analytics Engineer.
+- [ ] Requested scope and item counts are respected.
+- [ ] Required semantic sections are preserved.
+- [ ] No unnecessary implementation details were introduced.
+- [ ] The resulting documentation is directly usable by a Data Analyst or Analytics Engineer.
