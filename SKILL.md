@@ -300,15 +300,49 @@ Do not perform the analysis itself.
 
 Use `MET-xx`. Each metric must trace to an AR and define business meaning, role, type, mathematical logic, eligible population, grains, time semantics, null/zero-denominator behavior, dimensions, and dependencies as applicable.
 
+A Core KPI, Supporting Metric, Guardrail Metric, or Diagnostic Metric must have an explicit analytical purpose. Supporting or guardrail metrics may support multiple ARs, but they must not be orphaned.
+
 Do not assume all metrics are ratios. Internal ratios/rates should normally use a `0–1` representation with `%` as display formatting.
 
 ---
 
 ### Step 10 — Define Data Requirements
 
-Use `DR-xx`. Map ARs and Metrics to required entities, conceptual/physical fields, grain, identifiers, relationships, time fields, data-quality requirements, availability, and limitations.
+Use `DR-xx` and map data requirements from **Analytical Requirements and Metrics**, not directly from Business Questions or source columns.
 
-Do not invent fields, keys, relationships, cardinality, or proxies. If a conceptual requirement is known but physical implementation is not, use `TBD` for the physical field.
+Required downstream mapping:
+
+`AR -> MET -> DR`
+
+A Data Requirement must support at least one:
+
+- `AR-xx`
+- `MET-xx`
+- Explicit analytical constraint that is documented in the AR or metric definition
+
+Where applicable, define:
+
+- Related AR ID
+- Related Metric ID
+- Business entity
+- Conceptual data requirement
+- Physical field/source only when confirmed
+- Analytical role
+- Source grain
+- Identifier/key semantics when known
+- Required relationship and cardinality when supported
+- Required time field
+- Availability
+- Data-quality requirement
+- Known limitation and analytical impact
+
+Rules:
+
+- Do not derive DRs merely because columns exist in the source.
+- Do not map `BQ -> DR` as the primary relationship; BQ-level needs must first be translated into ARs.
+- Do not invent physical fields, keys, relationships, cardinality, data types, or proxies.
+- When a conceptual requirement is known but physical implementation is not, keep the conceptual requirement and set the physical field/source to `TBD`.
+- If one DR supports multiple ARs or metrics, record all relevant IDs rather than duplicating the requirement without need.
 
 ---
 
@@ -322,18 +356,22 @@ Do not automatically create proxies. If no semantically valid proxy exists, stat
 
 ### Step 12 — Validate Traceability
 
-Validate:
+Validate the complete chain:
 
 `Business Context -> PROB -> DEC -> OBJ -> BQ -> AR -> MET -> DR`
 
-Rules:
+Minimum traceability checks:
 
-- Business Problem aligns with Business Context.
-- Business Question aligns with Problem, Decision, and Objective.
-- AR aligns with BQ.
-- Metric aligns with AR.
-- DR aligns with AR and/or Metric.
-- No orphan requirements.
+- Every Business Problem aligns with Business Context.
+- Every priority BQ traces to a valid PROB and supports a DEC/OBJ.
+- Every BQ that requires implementation has at least one AR, unless explicitly documented as deferred or out of scope.
+- Every AR traces to at least one BQ.
+- Every primary MET traces to at least one AR.
+- Supporting/guardrail METs have an explicit analytical purpose and upstream linkage.
+- Every DR traces to an AR, a MET, or an explicit analytical constraint documented downstream of the BQ.
+- No primary DR is mapped only to a BQ while bypassing AR/MET.
+- Cross-document IDs remain stable and consistent.
+- No orphan PROB, DEC, OBJ, BQ, AR, MET, or DR remains in the requested scope.
 
 A structurally complete document can still be logically incorrect if it is misaligned with its upstream artifact.
 
@@ -384,28 +422,40 @@ Before returning final documentation verify:
 - [ ] Decision is defined or explicitly `TBD`.
 - [ ] Objectives support the decision.
 - [ ] BQs are business-oriented and decision-relevant.
+- [ ] BQs contain WHAT/WHY rather than AR-level implementation detail.
 - [ ] ARs define analytical structure and trace to BQs.
-- [ ] Metrics trace to ARs and have mathematically coherent definitions.
 - [ ] Required comparisons have a comparator or `TBD`.
-- [ ] Unit of Analysis, Population, time semantics, and edge cases are explicit where material.
+- [ ] Unit of Analysis, Population, analysis period, and analytical approach are explicit where material.
+- [ ] Metrics trace to ARs and have mathematically coherent definitions.
+- [ ] Time semantics and edge cases are explicit for time-dependent or ratio/rate metrics.
 
 ### Data Feasibility
 
-- [ ] DRs trace to ARs/Metrics or explicit analytical constraints.
+- [ ] DRs are derived from ARs/Metrics or explicit analytical constraints, not directly from source columns.
+- [ ] No primary `BQ -> DR` mapping bypasses the AR/MET layer.
 - [ ] Conceptual and physical fields are not conflated.
 - [ ] Source grain and analytical/reporting grain are not silently conflated.
+- [ ] Keys, relationships, cardinality, and data types are evidence-based or `TBD`.
 - [ ] Missing data and analytical impact are visible.
 - [ ] Semantically invalid proxies are not proposed.
+- [ ] Feasibility/readiness is classified where material.
 
 ### Traceability
 
 - [ ] `Business Context -> PROB -> DEC -> OBJ -> BQ -> AR -> MET -> DR` is maintained where applicable.
-- [ ] Cross-document identifiers remain consistent.
-- [ ] No orphan requirements remain.
+- [ ] Priority BQs trace to PROB/DEC/OBJ.
+- [ ] Implementable BQs trace to at least one AR unless explicitly deferred/out of scope.
+- [ ] Every AR traces to a BQ.
+- [ ] Primary Metrics trace to ARs.
+- [ ] Supporting/guardrail Metrics have an explicit upstream purpose.
+- [ ] Every DR traces to an AR, Metric, or explicit analytical constraint.
+- [ ] Cross-document identifiers remain stable and consistent.
+- [ ] No orphan requirements remain in the requested scope.
 
 ### Output Quality
 
 - [ ] Requested scope and item counts are respected.
 - [ ] Required semantic sections are preserved.
 - [ ] No unnecessary implementation details were introduced.
+- [ ] Material assumptions and limitations remain visible.
 - [ ] The resulting documentation is directly usable by a Data Analyst or Analytics Engineer.
