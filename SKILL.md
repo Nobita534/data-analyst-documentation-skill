@@ -1,7 +1,7 @@
 ---
 name: data-analyst-documentation-skill
 description: >-
-   Use this skill when the user wants to transform a business problem, stakeholder request, dataset schema, or existing analytics documentation into structured Data Analyst documentation, including business context, analytical questions, analytical requirements, metric definitions, data requirements, and data-quality specifications. Do not use this skill for direct data analysis, KPI calculation, SQL execution, dashboard building, backend/API specifications, or software-development requirements.
+  Use this skill when the user wants to transform a business problem, stakeholder request, dataset schema, or existing analytics documentation into structured Data Analyst documentation, including business context, analytical questions, analytical requirements, metric definitions, data requirements, and data-quality specifications. Do not use this skill for direct data analysis, KPI calculation, SQL execution, dashboard building, backend/API specifications, or software-development requirements.
 ---
 
 # Data Analyst Documentation Skill
@@ -12,7 +12,7 @@ This skill creates structured, implementation-ready analytical documentation for
 
 Its primary responsibility is to translate an ambiguous business request into the following traceable specification chain:
 
-`Business Problem -> Decision -> Analysis Objective -> Business Question -> Metric -> Data Requirement`
+`Business Problem -> Decision -> Analysis Objective -> Business Question -> Analytical Requirement -> Metric -> Data Requirement`
 
 This skill is a **documentation and specification workflow**, not a data-analysis workflow.
 
@@ -24,10 +24,10 @@ Use this skill to:
 * Identify the business decision that the analysis should support.
 * Define analysis objectives.
 * Define measurable Business Questions.
-* Specify analytical requirements, including population, baseline, dimensions, filters, exclusions, and expected outputs.
+* Specify analytical requirements, including population, baseline, dimensions, filters, exclusions, analytical approach, and expected outputs.
 * Define metrics and their business logic.
 * Define required data entities, fields, grain, relationships, time semantics, and data-quality expectations.
-* Assess whether available data can support a Business Question.
+* Assess whether available data can support an Analytical Requirement.
 * Review, refine, or extend existing Data Analyst documentation.
 * Identify ambiguity, unsupported assumptions, logical flaws, data gaps, and feasibility risks.
 * Maintain traceability across analytical documents.
@@ -70,6 +70,7 @@ When available, use:
 * Dataset schema or data dictionary.
 * Available tables, entities, fields, and relationships.
 * Existing Business Questions.
+* Existing Analytical Requirements.
 * Existing metrics or KPIs.
 * Analysis period or reporting window.
 * Business rules, exclusions, targets, or comparison baselines.
@@ -178,6 +179,7 @@ Review for:
 * Unsupported claims.
 * Missing decision context.
 * Ambiguous Business Questions.
+* Missing or weak Analytical Requirements.
 * Missing baselines.
 * Incorrect metric logic.
 * Missing data requirements.
@@ -190,7 +192,7 @@ Do not rewrite sections that do not materially need correction.
 
 ### Mode C — Extend
 
-Use when the user wants to add Business Questions, metrics, requirements, or other documentation.
+Use when the user wants to add Business Questions, Analytical Requirements, metrics, requirements, or other documentation.
 
 When extending:
 
@@ -251,7 +253,7 @@ Identify:
 * Existing documentation.
 * Requested number of items, if specified.
 
-If the user requests exactly `N` Business Questions, metrics, or other items, produce exactly `N`.
+If the user requests exactly `N` Business Questions, Analytical Requirements, metrics, or other items, produce exactly `N`.
 
 ---
 
@@ -339,36 +341,65 @@ Each Business Question must be:
 Where applicable, define:
 
 * Business Question ID.
+* Related Business Problem ID.
 * Analysis Objective ID.
 * Decision ID.
 * Business Question.
-* Analysis type.
+* Purpose.
+* Priority.
+
+Business Questions define **what the business needs the analysis to answer** and **why that answer matters**.
+
+Do not place implementation details in the Business Question specification. The following belong to Analytical Requirements instead:
+
 * Unit of analysis.
 * Eligible population.
+* Analysis period.
 * Baseline or comparator.
-* Primary metrics.
+* Required metrics.
 * Dimensions.
-* Filters.
-* Exclusions.
-* Analytical hypothesis.
-* Alternative explanation.
+* Filters and exclusions.
+* Analytical method.
+* Hypotheses and alternative explanations.
 * Expected analytical output.
+* Feasibility.
 
-### Comparative Questions
+Avoid Business Questions that merely restate a metric, describe a technical method, or predetermine the result.
 
-Questions involving terms such as:
+---
 
-* increase
-* decrease
-* higher
-* lower
-* better
-* worse
-* growth
-* decline
-* improvement
+### Step 7 — Define Analytical Requirements
 
-must specify a comparator or baseline.
+Translate each Business Question into one or more implementation-oriented Analytical Requirements.
+
+Use stable identifiers:
+
+`AR-01`, `AR-02`, ...
+
+Each Analytical Requirement must trace to a valid Business Question and define how the analysis should be structured without performing the analysis itself.
+
+Where applicable, define:
+
+* Analytical Requirement ID.
+* Related Business Question ID.
+* Analytical objective.
+* Unit of analysis.
+* Eligible population.
+* Analysis period.
+* Baseline or comparator.
+* Required metrics.
+* Dimensions.
+* Inclusion rules.
+* Exclusion rules.
+* Analytical approach.
+* Hypothesis and alternative explanation when relevant.
+* Expected analytical output.
+* Feasibility.
+* Assumptions and limitations.
+
+### Comparative Requirements
+
+Analytical Requirements involving comparison must define an explicit comparator or baseline.
 
 Examples:
 
@@ -376,32 +407,33 @@ Examples:
 * Same period last year.
 * Business target.
 * Historical baseline.
-* Other product category.
-* Control/reference group.
+* Another segment or category.
+* Reference/control group.
 
-If the comparator is unknown, mark it `TBD`.
+If the comparator is required but not known, mark it `TBD` rather than inventing one.
 
 ### Analytical Hypotheses
 
 A hypothesis is not a fact.
 
-When appropriate, include:
+When a hypothesis is useful, distinguish:
 
 * Primary hypothesis.
 * Alternative explanation.
-* Condition that would contradict or weaken the primary hypothesis.
+* Evidence that would weaken or contradict the hypothesis.
 
-Avoid designing Business Questions solely to confirm an existing belief.
+Do not design the Analytical Requirement solely to confirm an existing belief.
 
 ---
 
-### Step 7 — Define Metrics
+### Step 8 — Define Metrics
 
 Every metric must have a stable identifier when part of a multi-document specification.
 
 Where applicable, define:
 
 * Metric ID.
+* Related Analytical Requirement ID.
 * Metric name.
 * Business definition.
 * Metric role.
@@ -427,6 +459,7 @@ Do not assume every metric follows a numerator/denominator formula.
 Possible metric types include:
 
 * Count.
+* Distinct Count.
 * Sum.
 * Ratio.
 * Rate.
@@ -467,14 +500,14 @@ Unless business semantics explicitly require another treatment, an undefined rat
 
 ---
 
-### Step 8 — Define Data Requirements
+### Step 9 — Define Data Requirements
 
-Map analytical requirements to the data needed to implement them.
+Map Analytical Requirements and Metrics to the data needed to implement them.
 
 Where supported by provided information, specify:
 
 * Data Requirement ID.
-* Related Business Question ID.
+* Related Analytical Requirement ID.
 * Related Metric ID.
 * Entity or source table.
 * Required field.
@@ -493,7 +526,7 @@ If a field is conceptually required but unavailable, document the requirement an
 
 ---
 
-### Step 9 — Assess Data Feasibility
+### Step 10 — Assess Data Feasibility
 
 Classify analytical feasibility as:
 
@@ -513,11 +546,11 @@ If no valid proxy exists, state:
 
 ---
 
-### Step 10 — Validate Traceability
+### Step 11 — Validate Traceability
 
 Maintain the following analytical chain where applicable:
 
-`PROB -> DEC -> OBJ -> BQ -> MET -> DR`
+`PROB -> DEC -> OBJ -> BQ -> AR -> MET -> DR`
 
 Interpretation:
 
@@ -525,6 +558,7 @@ Interpretation:
 * `DEC` — Business Decision
 * `OBJ` — Analysis Objective
 * `BQ` — Business Question
+* `AR` — Analytical Requirement
 * `MET` — Metric
 * `DR` — Data Requirement
 
@@ -532,9 +566,10 @@ Validation rules:
 
 * Every priority Business Question must support an Analysis Objective.
 * Every Analysis Objective must support a business decision.
-* Every primary Metric must support at least one Business Question.
+* Every Analytical Requirement must trace to a Business Question.
+* Every primary Metric must support at least one Analytical Requirement.
 * Supporting or guardrail Metrics must have an explicit purpose.
-* Every Data Requirement must support a Business Question, Metric, or analytical constraint.
+* Every Data Requirement must support an Analytical Requirement, Metric, or analytical constraint.
 
 Avoid orphan requirements.
 
@@ -558,41 +593,74 @@ A document may be structurally complete but still be considered logically incorr
 
 Read only the reference files required for the requested task.
 
-### Business Context & Problem
+### Business Context
 
 Use:
 
-`references/data-analyst/01-business-context-problem.md`
+`references/01-business-context.md`
 
 For:
 
-* Business context.
-* Problem framing.
+* Business/domain context.
+* Operating context.
+* Stakeholders.
+* Key business entities.
+* Analytical relevance.
+* Context limitations and evidence status.
+
+---
+
+### Business Problem
+
+Use:
+
+`references/02-business-problem.md`
+
+For:
+
+* Core analytical problems.
 * Decision context.
 * Analysis objectives.
 * Scope and boundaries.
 * Assumptions and constraints.
+* Supporting DWH / ETL / ELT problems when explicitly relevant.
 
 ---
 
-### Business Questions & Analytical Requirements
+### Business Questions
 
 Use:
 
-`references/data-analyst/02-business-question-requirement.md`
+`references/03-business-question.md`
 
 For:
 
-* Objective-to-question mapping.
-* Business Question specification.
-* Analysis type.
+* Business Question derivation.
+* Question purpose.
+* Problem and decision alignment.
+* Business-facing prioritization.
+* Business Question traceability.
+
+---
+
+### Analytical Requirements
+
+Use:
+
+`references/04-analytical-requirement.md`
+
+For:
+
 * Unit of analysis.
-* Population.
+* Eligible population.
+* Analysis period.
 * Baseline/comparator.
+* Required metrics.
 * Dimensions.
 * Filters and exclusions.
-* Expected analytical outputs.
-* Data feasibility.
+* Analytical approach.
+* Expected analytical output.
+* Feasibility and limitations.
 
 ---
 
@@ -600,7 +668,7 @@ For:
 
 Use:
 
-`references/data-analyst/03-metric-dictionary.md`
+`references/05-metric-dictionary.md`
 
 For:
 
@@ -620,7 +688,7 @@ For:
 
 Use:
 
-`references/data-analyst/04-data-requirements-quality.md`
+`references/06-data-requirements-quality.md`
 
 For:
 
@@ -662,7 +730,6 @@ When reviewing user-created documentation:
 * Explicitly document material assumptions, limitations, and feasibility constraints.
 * Do not hide important analytical limitations outside the formal specification.
 
-
 ---
 
 ## 8. Definition of Done
@@ -685,7 +752,8 @@ Before returning any final documentation, verify all applicable checks.
 * [ ] The intended business decision is identified or explicitly marked `TBD`.
 * [ ] Analysis Objectives support the business decision.
 * [ ] Every Business Question is measurable and decision-relevant.
-* [ ] Comparative Business Questions define a baseline/comparator or explicitly mark it `TBD`.
+* [ ] Every Analytical Requirement traces to a Business Question and defines the required analytical structure.
+* [ ] Comparative Analytical Requirements define a baseline/comparator or explicitly mark it `TBD`.
 * [ ] Unit of analysis is defined where material.
 * [ ] Eligible population is defined where material.
 * [ ] Metric formulas match their metric types.
@@ -699,15 +767,16 @@ Before returning any final documentation, verify all applicable checks.
 * [ ] Source grain and analytical/reporting grain are not silently conflated.
 * [ ] Missing data is explicitly documented.
 * [ ] Semantically invalid proxy fields are not proposed.
-* [ ] Feasibility is classified where data limitations materially affect a Business Question.
+* [ ] Feasibility is classified where data limitations materially affect an Analytical Requirement.
 
 ### Traceability
 
 * [ ] Priority Business Questions trace to an Analysis Objective.
 * [ ] Analysis Objectives trace to a business decision.
-* [ ] Primary Metrics trace to Business Questions.
+* [ ] Analytical Requirements trace to Business Questions.
+* [ ] Primary Metrics trace to Analytical Requirements.
 * [ ] Supporting Metrics have an explicit purpose.
-* [ ] Data Requirements trace to Business Questions, Metrics, or analytical constraints.
+* [ ] Data Requirements trace to Analytical Requirements, Metrics, or analytical constraints.
 * [ ] Cross-document identifiers remain consistent.
 
 ### Output Quality
